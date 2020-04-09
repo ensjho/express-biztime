@@ -2,12 +2,14 @@
 
 
 const express = require("express");
+const ExpressError = require("./expressError")
+const companiesRoutes = require("./routes/companies");
 
 const app = express();
-const ExpressError = require("./expressError")
 
 app.use(express.json());
 
+app.use("/companies", companiesRoutes);
 
 /** 404 handler */
 
@@ -26,6 +28,5 @@ app.use((err, req, res, next) => {
     message: err.message
   });
 });
-
 
 module.exports = app;
