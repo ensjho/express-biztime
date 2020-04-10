@@ -110,16 +110,17 @@ router.put("/:id", async function(req, res, next){
   }
 })
 
+// if you are converting a parameter to Number, do it when declaring a variable
 router.delete("/:id", async function(req,res,next){
   try{
-    let invoiceId = req.params.id;
+    let invoiceId = Number(req.params.id);
     let result = await db.query(
       `DELETE FROM invoices
       WHERE id=$1
       RETURNING id`,
       [invoiceId]
     )
-    if(result.rows[0].id === Number(invoiceId)) {
+    if(result.rows[0].id === invoiceId) {
       return res.json({status:"invoice deleted!"})
     }
     else{

@@ -22,19 +22,31 @@ router.get("/", async function (req, res, next) {
 
 /**Return obj of company: {company: {code, name, description}}
 If the company given cannot be found, this should return a 404 status response.*/
+
+//EDITED for many to many 
 router.get("/:code", async function (req, res, next) {
   try {
     let code = req.params.code;
 
-    const result = await db.query(
+    const companyResult = await db.query(
       `SELECT code, name, description
        FROM companies
        WHERE code = $1`,
       [code]
     );
 
-    if (result.rows.length !== 0) {
-      return res.json({ company: result.rows })
+    const invoiceResult = await db.query(
+      `SELECT id
+      FROM invoices
+      WHERE comp_code = $1`,
+      [code]
+    );
+
+    let result = companyResult.rows[0];
+    result.invoices = invoiceResult.rows.map(r => r.id);
+
+    if (result.length !== 0) {
+      return res.json({result:result})
     } else {
       throw new ExpressError("Not Found", 404);
     }
